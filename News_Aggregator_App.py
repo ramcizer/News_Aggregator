@@ -318,10 +318,11 @@ cursor = conn.cursor()
 
 pio.templates.default = 'plotly'
 
-# with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
-#     fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
-#     time.sleep(5)
-# st.success('Done!')
+with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
+    @st.cache
+    fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
+    time.sleep(5)
+st.success('Done!')
 
 # fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
 
@@ -331,6 +332,5 @@ while True:
     schedule.run_pending()
     # frontpage_update(plt=plt, representative_topics=representative_topics)
     frontpage_update()
-    st.cache()
     time.sleep(1)
 
