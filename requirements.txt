@@ -1,0 +1,20 @@
+psycopg2
+re 
+pandas
+datetime
+google_news_feed 
+spacy
+spacytextblob.spacytextblob import SpacyTextBlob
+bertopic
+plotly.graph_objs
+plotly.graph_objs
+sklearn.feature_extraction.text import CountVectorizer
+numpy
+wordcloud 
+plotly.io
+matplotlib.pyplot
+nltk
+nltk.corpus
+streamlit
+schedule
+time
