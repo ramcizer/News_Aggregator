@@ -17,4 +17,5 @@ plotly
 streamlit
 matplotlib
 time
+nltk
 
