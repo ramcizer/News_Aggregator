@@ -12,7 +12,7 @@ plotly
 scikit-learn
 numpy
 wordcloud 
-plotly.io
+plotly
 matplotlib
 nltk
 streamlit
