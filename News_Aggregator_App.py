@@ -169,7 +169,7 @@ def bertopic_load_query_output(cursor):
 
     # plt.figure(figsize=(9, 7.2))
 
-    fig = topic_model.visualize_topics(height=500, width=6500)
+    fig = topic_model.visualize_topics(height=590, width=580)
     
     # fig.write_html("visualisation.html")
 
