@@ -5,7 +5,6 @@ datetime
 aiohttp
 beautifulsoup4
 dateparser
-lxml
 google_news_feed 
 spacy
 spacytextblob
