@@ -1,4 +1,3 @@
-streamlit
 psycopg2-binary==x.x.x
 sqlalchemy==x.x.x
 re 
