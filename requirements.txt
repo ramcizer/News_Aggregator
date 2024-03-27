@@ -1,3 +1,4 @@
+streamlit
 psycopg2-binary
 pandas
 datetime
@@ -14,8 +15,5 @@ scikit-learn
 numpy
 wordcloud 
 plotly
-streamlit
-matplotlib
 time
-nltk
 
