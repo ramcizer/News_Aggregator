@@ -14,6 +14,8 @@ scikit-learn
 numpy
 wordcloud 
 plotly
+streamlit
 matplotlib
+nltk
 time
 
