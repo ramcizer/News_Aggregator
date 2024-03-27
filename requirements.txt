@@ -16,6 +16,5 @@ wordcloud
 plotly
 matplotlib
 nltk
-schedule
 time
 google-news-feed
