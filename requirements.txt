@@ -10,7 +10,7 @@ spacy
 spacytextblob
 bertopic
 plotly
-sklearn
+scikit-learn
 numpy
 wordcloud 
 plotly
