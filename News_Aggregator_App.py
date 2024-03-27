@@ -167,9 +167,11 @@ def bertopic_load_query_output(cursor):
 
     representative_topics_dict = update_reprsentative_items_dict(representative_topics_dict)
 
-    fig = topic_model.visualize_topics()
+    # plt.figure(figsize=(9, 7.2))
+
+    fig = topic_model.visualize_topics(height=610, width=610)
     
-    fig.write_html("visualisation.html")
+    # fig.write_html("visualisation.html")
 
     return fig, titles, representative_topics_dict
 
@@ -183,6 +185,11 @@ def wordcloud_load_and_output(title_list):
     stop_words.update(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'])
     stop_words = list(stop_words)
 
+    # stopwords = nltk.corpus.stopwords.words('english')
+    # print(type(stopwords))
+    
+    # # Adding stopwords
+    # stopwords.extend(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'])
     wc = WordCloud(background_color='white', colormap = 'binary',
     stopwords = stop_words, width = 800, height = 500).generate(title_text)
 
@@ -260,7 +267,9 @@ with st.container(border=True):
             st.write(f'**Top Mentioned Products**', unsafe_allow_html=True)                
             top_mentioned_products1 = st.empty()
 with st.container(): 
-    intertopic_chart = st.empty()
+    itopic_col1, itopic_col2, itopic_col3 = st.columns([0.28, 3.8, 0.28], gap="small")   
+    with itopic_col2:
+        intertopic_chart = st.empty()
 
 def my_task(connection, cursor):
     
@@ -276,7 +285,8 @@ def my_task(connection, cursor):
     return fig, plt, representative_topics, orgs, people, GPEs, NORPs, products
 
 
-def frontpage_update(plt, representative_topics):
+# def frontpage_update(plt, representative_topics):
+def frontpage_update():
     st_pyplot.pyplot(plt)
     topics_headline.write(f'**Top Intertopic Indicative Links**', unsafe_allow_html=True)
     topics1.write(f'<span class="custom-line">1. [{representative_topics[1][0]}]({representative_topics[1][1]})', unsafe_allow_html=True)
@@ -296,7 +306,7 @@ def frontpage_update(plt, representative_topics):
     top_mentioned_GPEs1.write(f'{GPEs[0][0]} | Polarity {round(GPEs[0][1], 3)}')
     top_mentioned_NORPS1.write(f'{NORPs[0][0]} | Polarity {round(NORPs[0][1], 3)}')
     top_mentioned_products1.write(f'{products[0][0]} | Polarity {round(products[0][1],3)}')
-    intertopic_chart.plotly_chart(fig, use_container_width=True)
+    intertopic_chart.plotly_chart(fig, use_container_width=False)
 
 
 date = datetime.now().strftime('%Y-%m-%d')
@@ -306,12 +316,18 @@ cursor = conn.cursor()
 
 pio.templates.default = 'plotly'
 
-fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
+with st.spinner('Wait for it...'):
+    fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
+    time.sleep(5)
+st.success('Done!')
 
-schedule.every(15).minutes.do(my_task, connection=conn, cursor=cursor)
+# fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
+
+schedule.every(4).minutes.do(my_task, connection=conn, cursor=cursor)
 
 while True: 
     schedule.run_pending()
-    frontpage_update(plt=plt, representative_topics=representative_topics)
+    # frontpage_update(plt=plt, representative_topics=representative_topics)
+    frontpage_update()
     time.sleep(1)
 
