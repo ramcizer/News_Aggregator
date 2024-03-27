@@ -16,4 +16,4 @@ wordcloud
 plotly
 matplotlib
 time
-google-news-feed
+
