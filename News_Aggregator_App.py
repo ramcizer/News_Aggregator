@@ -13,7 +13,7 @@ from wordcloud import WordCloud
 import plotly.io as pio
 import matplotlib.pyplot as plt
 import nltk
-# from nltk.corpus import stopwords
+from nltk.corpus import stopwords
 import streamlit as st
 import schedule
 import time
@@ -174,15 +174,17 @@ def bertopic_load_query_output(cursor):
     return fig, titles, representative_topics_dict
 
 def wordcloud_load_and_output(title_list): 
-    title_text = ' '.join(title_list)
-    stopwords = nltk.download('stopwords')
-    # stopwords = nltk.corpus.stopwords.words('english')
 
-    # Adding stopwords
-    stopwords.extend(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'])
+    title_text = ' '.join(title_list)
+    
+    nltk.download('stopwords')
+    stop_words = set(stopwords.words('english'))
+
+    stop_words.update(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'])
+    stop_words = list(stop_words)
 
     wc = WordCloud(background_color='white', colormap = 'binary',
-    stopwords = stopwords, width = 800, height = 500).generate(title_text)
+    stopwords = stop_words, width = 800, height = 500).generate(title_text)
 
     plt.figure(figsize=(8, 4))
     plt.imshow(wc, interpolation='bilinear')
