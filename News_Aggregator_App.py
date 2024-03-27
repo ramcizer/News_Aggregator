@@ -13,7 +13,7 @@ from wordcloud import WordCloud
 import plotly.io as pio
 import matplotlib.pyplot as plt
 import nltk
-from nltk.corpus import stopwords
+# from nltk.corpus import stopwords
 import streamlit as st
 import schedule
 import time
@@ -175,7 +175,8 @@ def bertopic_load_query_output(cursor):
 
 def wordcloud_load_and_output(title_list): 
     title_text = ' '.join(title_list)
-    stopwords = nltk.corpus.stopwords.words('english')
+    stopwords = nltk.download('stopwords')
+    # stopwords = nltk.corpus.stopwords.words('english')
 
     # Adding stopwords
     stopwords.extend(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'])
