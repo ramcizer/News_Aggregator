@@ -1,3 +1,4 @@
+streamlit
 psycopg2-binary
 re 
 pandas
@@ -15,6 +16,5 @@ plotly.io
 matplotlib.pyplot
 nltk
 nltk.corpus
-streamlit
 schedule
 time
