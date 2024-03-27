@@ -16,6 +16,5 @@ wordcloud
 plotly
 streamlit
 matplotlib
-nltk
 time
 
