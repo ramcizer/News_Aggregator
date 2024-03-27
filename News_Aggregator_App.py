@@ -308,7 +308,7 @@ pio.templates.default = 'plotly'
 
 fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
 
-schedule.every(4).minutes.do(my_task, connection=conn, cursor=cursor)
+schedule.every(15).minutes.do(my_task, connection=conn, cursor=cursor)
 
 while True: 
     schedule.run_pending()
