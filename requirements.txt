@@ -1,6 +1,5 @@
 streamlit
 psycopg2-binary
-re 
 pandas
 datetime
 aiohttp
