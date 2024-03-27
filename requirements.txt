@@ -1,7 +1,12 @@
 psycopg2-binary
 pandas
 datetime
-google_news_feed==1.1.0
+aiohttp
+beautifulsoup4
+dateparser
+lxml
+requests
+google-news-feed
 spacy
 spacytextblob
 bertopic
