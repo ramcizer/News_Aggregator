@@ -273,7 +273,6 @@ with st.container():
     # with itopic_col2:
     intertopic_chart = st.empty()
     
-@st.cache_data
 def my_task(connection, cursor):
     
     sql1, sql2, sql3 = main_sql_insert_and_check()
