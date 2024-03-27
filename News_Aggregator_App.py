@@ -272,7 +272,8 @@ with st.container():
     # itopic_col1, itopic_col2, itopic_col3 = st.columns([0.28, 3.8, 0.28], gap="small")   
     # with itopic_col2:
     intertopic_chart = st.empty()
-
+    
+@st.cache_data
 def my_task(connection, cursor):
     
     sql1, sql2, sql3 = main_sql_insert_and_check()
@@ -318,11 +319,10 @@ cursor = conn.cursor()
 
 pio.templates.default = 'plotly'
 
-# with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
-#     @st.cache
-#     fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
-#     time.sleep(5)
-# st.success('Done!')
+with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
+    fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
+    time.sleep(5)
+st.success('Done!')
 
 # fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
 
@@ -331,7 +331,6 @@ schedule.every(4).minutes.do(my_task, connection=conn, cursor=cursor)
 while True: 
     schedule.run_pending()
     # frontpage_update(plt=plt, representative_topics=representative_topics)
-    @st.cache
     frontpage_update()
     time.sleep(1)
 
