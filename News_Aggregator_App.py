@@ -1,9 +1,7 @@
-import streamlit as st
 import psycopg2
 import re 
 import pandas as pd
 from datetime import datetime
-from google_news_feed import GoogleNewsFeed
 import spacy
 from spacytextblob.spacytextblob import SpacyTextBlob
 from bertopic import BERTopic
@@ -16,8 +14,13 @@ import plotly.io as pio
 import matplotlib.pyplot as plt
 import nltk
 from nltk.corpus import stopwords
+import streamlit as st
 import schedule
 import time
+import requests
+import xmltodict
+import requests
+from xml.etree import ElementTree
 # import os
 
 def database_connection(): 
@@ -97,33 +100,43 @@ def sql_for_top_entity_polarity():
     return top_org_sql, top_people_sql, top_GPE_sql, NORP_sql, poduct_sql
 
 
-def spacey_load(query1, query2, query3, google_news_feed): 
+def spacey_load(query1, query2, query3): 
 
     # setting the English pipeline
     nlp = spacy.load("en_core_web_sm")
     nlp.add_pipe('spacytextblob')
 
-    # Adding the data
-    for headlines in gnf.top_headlines(): 
-        description = headlines.description
-        match = re.search(r'continue=(.*?)$', headlines.link)
-        link_ = match.group(1)
-        # link_ = re.match(r'(?<=continue).*', headlines.link)
-        cursor.execute(query3, (description,))
+    url = "https://news.google.com/rss?hl=en-GB&gl=GB&ceid=GB:en"
+    response = requests.get(url)
+    dict_data = xmltodict.parse(response.content)
+    items = dict_data['rss']['channel']['item']
+
+    for item in items: 
+        match = re.search(r'^(.*?)-', item['title'])
+        title = match.group(1).strip() 
+        pub_date = item['pubDate']
+        parsed_date = datetime.strptime(pub_date, "%a, %d %b %Y %H:%M:%S %Z")
+        formatted_date = parsed_date.strftime("%Y-%m-%d")
+        source = item['source']['#text']
+        link_ = item['link']
+        # print(title, item['link'], item['source']['#text'], formatted_date)
+        cursor.execute(query3, (title,))
         try: 
             record_count = cursor.fetchone()[0]
         except Exception: 
             return 0
         if record_count == 0: 
-            doc = nlp(description)
+            doc = nlp(title)
             polarity = doc._.blob.polarity        
-            news_data = (headlines.pubDate, description, headlines.source, link_, polarity) 
+            news_data = (formatted_date, title, source, link_, polarity) 
             cursor.execute(query1, news_data)
             conn.commit()
             for ent in doc.ents:
-                entity_data = (headlines.pubDate, ent.text, ent.label_, polarity)
+                entity_data = (pub_date, ent.text, ent.label_, polarity)
                 cursor.execute(query2, entity_data)        
                 conn.commit()
+    
+
 
 
 def bertopic_load_query_output(cursor):
@@ -197,6 +210,7 @@ def top_entity_polarity(cursor):
 
     return top_org, top_people, top_GPE, top_NORP, top_product
 
+# Initialising the streamlit webpage
 st.set_page_config()
 
 st.header('Weekly News Aggregated Summary', divider="blue") 
@@ -245,10 +259,10 @@ with st.container(border=True):
 with st.container(): 
     intertopic_chart = st.empty()
 
-def my_task(connection, cursor, news_feed):
+def my_task(connection, cursor):
     
     sql1, sql2, sql3 = main_sql_insert_and_check()
-    spacey_load(sql1, sql2, sql3, gnf)
+    spacey_load(sql1, sql2, sql3)
     fig, titles, representative_topics = bertopic_load_query_output(cursor=cursor)
     original_figure_data = fig['data']
     original_figure_layout = fig['layout']
@@ -285,13 +299,13 @@ def frontpage_update(plt, representative_topics):
 date = datetime.now().strftime('%Y-%m-%d')
 conn = database_connection()    
 cursor = conn.cursor()
-gnf = GoogleNewsFeed(language='en',country='UK')
+# gnf = GoogleNewsFeed(language='en',country='UK')
 
 pio.templates.default = 'plotly'
 
-fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor, news_feed=gnf)
+fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
 
-schedule.every(15).minutes.do(my_task, connection=conn, cursor=cursor, news_feed=gnf)
+schedule.every(4).minutes.do(my_task, connection=conn, cursor=cursor)
 
 while True: 
     schedule.run_pending()
