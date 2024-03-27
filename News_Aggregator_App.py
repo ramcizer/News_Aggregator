@@ -1,5 +1,5 @@
 import streamlit as st
-import psycopg2-binary
+import psycopg2
 import re 
 import pandas as pd
 from datetime import datetime
