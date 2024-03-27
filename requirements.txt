@@ -1,12 +1,13 @@
 streamlit
-psycopg2-binary
+psycopg2
+re 
 pandas
 datetime
 aiohttp
 beautifulsoup4
 dateparser
 lxml
-requests
+google_news_feed 
 spacy
 spacytextblob
 bertopic
@@ -14,6 +15,10 @@ plotly
 scikit-learn
 numpy
 wordcloud 
-plotly
+plotly.io
+matplotlib
+nltk
+streamlit
+schedule
 time
 
