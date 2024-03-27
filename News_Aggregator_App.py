@@ -223,7 +223,7 @@ def top_entity_polarity(cursor):
 # Initialising the streamlit webpage
 st.set_page_config()
 
-st.header('Weekly News Aggregated Summary', divider="blue") 
+st.header('Weekly News Aggregated Summary | NewsBevy', divider="blue") 
 st.markdown('<link rel="stylesheet" href="custom.css">', unsafe_allow_html=True)
 
 with st.container(border=True): 
@@ -258,18 +258,18 @@ with st.container(border=True):
             st.write(f'**Top Mentioned Person**', unsafe_allow_html=True) 
             top_mentioned_people1 = st.empty() 
         with st.container(border=True):
-            st.write(f'**Top Mentioned GPEs**', unsafe_allow_html=True)                
+            st.write(f'**Top Mentioned GPE**', unsafe_allow_html=True)                
             top_mentioned_GPEs1 = st.empty()
         with st.container(border=True):
-            st.write(f'**Top Mentioned NORPs**', unsafe_allow_html=True)                
+            st.write(f'**Top Mentioned NORP**', unsafe_allow_html=True)                
             top_mentioned_NORPS1 = st.empty()
         with st.container(border=True):
-            st.write(f'**Top Mentioned Products**', unsafe_allow_html=True)                
+            st.write(f'**Top Mentioned Product**', unsafe_allow_html=True)                
             top_mentioned_products1 = st.empty()
 with st.container(): 
-    itopic_col1, itopic_col2, itopic_col3 = st.columns([0.28, 3.8, 0.28], gap="small")   
-    with itopic_col2:
-        intertopic_chart = st.empty()
+    # itopic_col1, itopic_col2, itopic_col3 = st.columns([0.28, 3.8, 0.28], gap="small")   
+    # with itopic_col2:
+    intertopic_chart = st.empty()
 
 def my_task(connection, cursor):
     
@@ -316,7 +316,7 @@ cursor = conn.cursor()
 
 pio.templates.default = 'plotly'
 
-with st.spinner('Wait for it...'):
+with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
     fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
     time.sleep(5)
 st.success('Done!')
