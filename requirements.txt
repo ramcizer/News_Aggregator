@@ -1,7 +1,7 @@
 psycopg2-binary
 pandas
 datetime
-google_news_feed 
+google-news-feed
 spacy
 spacytextblob
 bertopic
