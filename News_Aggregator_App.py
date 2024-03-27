@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg2-binary
 import re 
 import pandas as pd
 from datetime import datetime
