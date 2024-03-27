@@ -19,6 +19,5 @@ streamlit
 schedule
 xmltodict
 requests
-xml
 
 
