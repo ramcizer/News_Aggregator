@@ -17,6 +17,8 @@ matplotlib
 nltk
 streamlit
 schedule
-google-news-feed
+xmltodict
+requests
+xml
 
 
