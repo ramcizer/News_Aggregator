@@ -6,7 +6,7 @@ beautifulsoup4
 dateparser
 lxml
 requests
-google-news-feed
+google-news-feed==1.0.0
 spacy
 spacytextblob
 bertopic
