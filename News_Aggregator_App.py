@@ -18,7 +18,7 @@ from nltk.corpus import stopwords
 import streamlit as st
 import schedule
 import time
-import os
+# import os
 
 def database_connection(): 
 # The connection to the PostGre database
@@ -122,7 +122,6 @@ def spacey_load(query1, query2, query3, google_news_feed):
             conn.commit()
             for ent in doc.ents:
                 entity_data = (headlines.pubDate, ent.text, ent.label_, polarity)
-                print(headlines.pubDate, ent.text, ent.label_, polarity)
                 cursor.execute(query2, entity_data)        
                 conn.commit()
 
@@ -135,7 +134,6 @@ def bertopic_load_query_output(cursor):
 
     cursor.execute(sql_query_for_titles)
     titles = [title[0] for title in cursor.fetchall()]
-    # titles = cursor.fetchall()
 
     vectorizer_model = CountVectorizer(stop_words="english")
 
@@ -144,31 +142,20 @@ def bertopic_load_query_output(cursor):
 
     topics, probabilities = topic_model.fit_transform(titles)
 
-    print(topic_model.get_topics())
-
     topic_df = topic_model.get_topic_info()
-    print(topic_df)
 
     # The links to the right of intertopic
     representative_topics_dict = {}
     for i in range(len(topic_df)): 
-        # top_representative_sql = f"SELECT rna.link FROM student.rck_news_agg rna WHERE rna.title = %s"
         cursor.execute(top_representative_sql, (topic_df.Representative_Docs[i][0],))
         top_representative = cursor.fetchall()
         representative_topics_dict[i] = [f'{topic_df.loc[i, "Name"]}', top_representative[0][0]]
 
-    # print(representative_topics_dict)
 
     representative_topics_dict = update_reprsentative_items_dict(representative_topics_dict)
 
-    # print(representative_topics_dict)
-
     fig = topic_model.visualize_topics()
-    # fig.add_candlestick()
-    # fig.write_image("visualisation.png")
-
-    # Show works to open a browser. 
-    # fig.show()
+    
     fig.write_html("visualisation.html")
 
     return fig, titles, representative_topics_dict
@@ -185,7 +172,6 @@ def wordcloud_load_and_output(title_list):
 
     plt.figure(figsize=(8, 4))
     plt.imshow(wc, interpolation='bilinear')
-    # plt.title('NewsCloud')
     plt.axis("off")  # Hide axes
 
     return plt
@@ -215,12 +201,6 @@ st.set_page_config()
 
 st.header('Weekly News Aggregated Summary', divider="blue") 
 st.markdown('<link rel="stylesheet" href="custom.css">', unsafe_allow_html=True)
-
-# with st.sidebar:
-#     add_radio = st.(
-#         "Choose a shipping method",
-#         ("Standard (5-15 days)", "Express (2-5 days)")
-#     )
 
 with st.container(border=True): 
 
@@ -275,7 +255,6 @@ def my_task(connection, cursor, news_feed):
     # Creating a new figure using plotly.graph_objs.Figure constructor
     fig = Figure(data=original_figure_data, layout=original_figure_layout)
     plt = wordcloud_load_and_output(titles)
-    plt2 = wordtopic__good_news()
     orgs, people, GPEs, NORPs, products = top_entity_polarity(cursor=cursor)
     return fig, plt, representative_topics, orgs, people, GPEs, NORPs, products
 
@@ -296,15 +275,10 @@ def frontpage_update(plt, representative_topics):
     topics11.write(f'<span class="custom-line">11. [{representative_topics[11][0]}]({representative_topics[11][1]})', unsafe_allow_html=True)
     topics12.write(f'<span class="custom-line">12. [{representative_topics[12][0]}]({representative_topics[12][1]})', unsafe_allow_html=True)
     top_mentioned_orgs1.write(f'{orgs[0][0]} | Polarity {round(orgs[0][1], 3)}')
-    # top_mentioned_orgs2.write(f'{orgs[1][0]} | Polarity {round(orgs[1][1],3)}')
     top_mentioned_people1.write(f'{people[0][0]} | Polarity {round(people[0][1],3)}')
-    # top_mentioned_people2.write(f'{people[1][0]} | Polarity {round(people[1][1], 3)}')
     top_mentioned_GPEs1.write(f'{GPEs[0][0]} | Polarity {round(GPEs[0][1], 3)}')
-    # top_mentioned_GPEs2.write(f'{GPEs[1][0]} | Polarity {round(GPEs[1][1],3)}')
     top_mentioned_NORPS1.write(f'{NORPs[0][0]} | Polarity {round(NORPs[0][1], 3)}')
-    # top_mentioned_NORPS2.write(f'{NORPs[1][0]} | Polarity {round(NORPs[1][1], 3)}')
     top_mentioned_products1.write(f'{products[0][0]} | Polarity {round(products[0][1],3)}')
-    # top_mentioned_products2.write(f'{products[1][0]} | Polarity {round(products[1][1],3)}')
     intertopic_chart.plotly_chart(fig, use_container_width=True)
 
 
@@ -317,7 +291,7 @@ pio.templates.default = 'plotly'
 
 fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor, news_feed=gnf)
 
-schedule.every(15).minutes.do(my_task, connection=conn, cursor=cursor, news_feed=gnf)
+schedule.every(4).minutes.do(my_task, connection=conn, cursor=cursor, news_feed=gnf)
 
 while True: 
     schedule.run_pending()
