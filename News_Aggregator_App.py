@@ -1,3 +1,4 @@
+import streamlit as st
 import psycopg2-binary
 import re 
 import pandas as pd
@@ -15,7 +16,6 @@ import plotly.io as pio
 import matplotlib.pyplot as plt
 import nltk
 from nltk.corpus import stopwords
-import streamlit as st
 import schedule
 import time
 # import os
