@@ -1,5 +1,4 @@
-psycopg2-binary==x.x.x
-sqlalchemy==x.x.x
+psycopg2-binary==2.9.1
 re 
 pandas
 datetime
