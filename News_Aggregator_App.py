@@ -96,10 +96,6 @@ def sql_for_top_entity_polarity():
 
     return top_org_sql, top_people_sql, top_GPE_sql, NORP_sql, poduct_sql
 
-def sql_good_news():
-    sql_query_for_good_news = "SELECT title FROM student.rck_news_agg rna WHERE polarity > 0.01 AND AND pub_date  > current_date - interval '7 days'"
-
-    return sql_query_for_good_news
 
 def spacey_load(query1, query2, query3, google_news_feed): 
 
@@ -194,24 +190,6 @@ def wordcloud_load_and_output(title_list):
 
     return plt
 
-def wordtopic__good_news():
-    sql_query = sql_good_news()
-    cursor.execute(sql_query)
-    titles = [title[0] for title in cursor.fetchall()]
-
-    title_text = ' '.join(titles)
-    stopwords = nltk.corpus.stopwords.words('english')
-    stopwords.extend(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'])
-
-    wc = WordCloud(background_color='white', colormap = 'binary',
-    stopwords = stopwords, width = 800, height = 500).generate(title_text)
-
-    plt.figure(figsize=(8, 4))
-    plt.imshow(wc, interpolation='bilinear')
-    # plt.title('NewsCloud')
-    plt.axis("off")  # Hide axes
-
-    return plt
 
 def top_entity_polarity(cursor):
 
@@ -301,8 +279,6 @@ def my_task(connection, cursor, news_feed):
     orgs, people, GPEs, NORPs, products = top_entity_polarity(cursor=cursor)
     return fig, plt, representative_topics, orgs, people, GPEs, NORPs, products
 
-# def my_task2(connection, cursor, news_feed):
-#     sql1 = sql_good_news
 
 def frontpage_update(plt, representative_topics):
     st_pyplot.pyplot(plt)
@@ -341,9 +317,10 @@ pio.templates.default = 'plotly'
 
 fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor, news_feed=gnf)
 
-schedule.every(10).minutes.do(my_task, connection=conn, cursor=cursor, news_feed=gnf)
+schedule.every(15).minutes.do(my_task, connection=conn, cursor=cursor, news_feed=gnf)
 
 while True: 
     schedule.run_pending()
     frontpage_update(plt=plt, representative_topics=representative_topics)
     time.sleep(1)
+
