@@ -1,5 +1,4 @@
-psycopg2-binary==2.9.1
-re 
+psycopg2-binary==2.8.2
 pandas
 datetime
 google_news_feed 
