@@ -4,11 +4,11 @@ pandas
 datetime
 google_news_feed 
 spacy
-spacytextblob.spacytextblob import SpacyTextBlob
+spacytextblob.spacytextblob
 bertopic
 plotly.graph_objs
 plotly.graph_objs
-sklearn.feature_extraction.text import CountVectorizer
+sklearn.feature_extraction.text
 numpy
 wordcloud 
 plotly.io
