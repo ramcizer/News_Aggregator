@@ -5,7 +5,7 @@ datetime
 aiohttp
 beautifulsoup4
 dateparser
-google_news_feed 
+google-news-feed 
 spacy
 spacytextblob
 bertopic
