@@ -331,6 +331,7 @@ schedule.every(4).minutes.do(my_task, connection=conn, cursor=cursor)
 while True: 
     schedule.run_pending()
     # frontpage_update(plt=plt, representative_topics=representative_topics)
+    @st.cache
     frontpage_update()
     time.sleep(1)
 
