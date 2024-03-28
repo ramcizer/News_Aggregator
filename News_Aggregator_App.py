@@ -290,10 +290,10 @@ def main_data(connection, cursor):
     sql1, sql2, sql3 = main_sql_insert_and_check()
     spacey_load(sql1, sql2, sql3)
     fig, titles, representative_topics = bertopic_load_query_output(cursor=cursor)
-    original_figure_data = fig['data']
-    original_figure_layout = fig['layout']
-    # Creating a new figure using plotly.graph_objs.Figure constructor
-    fig = Figure(data=original_figure_data, layout=original_figure_layout)
+    # original_figure_data = fig['data']
+    # original_figure_layout = fig['layout']
+    # # Creating a new figure using plotly.graph_objs.Figure constructor
+    # fig = Figure(data=original_figure_data, layout=original_figure_layout)
     plt = wordcloud_load_and_output(titles)
     orgs, people, GPEs, NORPs, products = top_entity_polarity(cursor=cursor)
     return fig, plt, representative_topics, orgs, people, GPEs, NORPs, products
