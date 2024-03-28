@@ -343,7 +343,7 @@ st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6
 
 # fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
 
-schedule.every(4).minutes.do(frontpage_update, conn=conn, cursor=cursor)
+schedule.every(15).minutes.do(frontpage_update, conn=conn, cursor=cursor)
 
 while streamlit_web_initialisation: 
     schedule.run_pending()
