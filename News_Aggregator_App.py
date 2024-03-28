@@ -25,12 +25,16 @@ from xml.etree import ElementTree
 
 def database_connection(): 
 # The connection to the PostGre database
+    db_username = st.secrets["db_username"]
+    db_password - st.secrets["db_password]
     try: 
         conn = psycopg2.connect(
             host="data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com",
             dbname="pagila",
-            user="de_raka",
-            password="vacso",
+            # user="de_raka",
+            # password="vacso",
+            user = db_username
+            password = db_password
             # user = st.secrets["db_username"],
             # password = st.secrets["db_password"],
             port="5432"    
@@ -163,8 +167,12 @@ def bertopic_load_query_output(cursor):
     representative_topics_dict = {}
     for i in range(len(topic_df)): 
         cursor.execute(top_representative_sql, (topic_df.Representative_Docs[i][0],))
-        top_representative = cursor.fetchall()
-        representative_topics_dict[i] = [f'{topic_df.loc[i, "Name"]}', top_representative[0][0]]
+        try: 
+            top_representative = cursor.fetchall()
+        except Exception: 
+            pass
+        if top_representative: 
+            representative_topics_dict[i] = [f'{topic_df.loc[i, "Name"]}', top_representative[0][0]]
 
 
     representative_topics_dict = update_reprsentative_items_dict(representative_topics_dict)
