@@ -108,6 +108,7 @@ def spacey_load(query1, query2, query3):
     nlp = spacy.load("en_core_web_sm")
     nlp.add_pipe('spacytextblob')
 
+    # Making the RSS call and 
     url = "https://news.google.com/rss?hl=en-GB&gl=GB&ceid=GB:en"
     response = requests.get(url)
     dict_data = xmltodict.parse(response.content)
@@ -121,7 +122,7 @@ def spacey_load(query1, query2, query3):
         formatted_date = parsed_date.strftime("%Y-%m-%d")
         source = item['source']['#text']
         link_ = item['link']
-        # print(title, item['link'], item['source']['#text'], formatted_date)
+        # Check to see if record already exists
         cursor.execute(query3, (title,))
         try: 
             record_count = cursor.fetchone()[0]
@@ -139,16 +140,17 @@ def spacey_load(query1, query2, query3):
                 conn.commit()
     
 
-
-
 def bertopic_load_query_output(cursor):
 
     ### Section for BERTopic 
 
     sql_query_for_titles, top_representative_sql = sql_queries_for_BERTopic()   
 
+    # Need to include defensive to forward the cached version of the fig after this
     cursor.execute(sql_query_for_titles)
     titles = [title[0] for title in cursor.fetchall()]
+    # except Exception: 
+    #     titles = []
 
     vectorizer_model = CountVectorizer(stop_words="english")
 
@@ -163,10 +165,11 @@ def bertopic_load_query_output(cursor):
     representative_topics_dict = {}
     for i in range(len(topic_df)): 
         cursor.execute(top_representative_sql, (topic_df.Representative_Docs[i][0],))
-        try: 
-            top_representative = cursor.fetchall()
-        except Exception: 
-            pass
+        top_representative = cursor.fetchall()
+        # try: 
+        #     top_representative = cursor.fetchall()
+        # except Exception: 
+        #     pass
         if top_representative: 
             representative_topics_dict[i] = [f'{topic_df.loc[i, "Name"]}', top_representative[0][0]]
 
@@ -175,7 +178,8 @@ def bertopic_load_query_output(cursor):
 
     # plt.figure(figsize=(9, 7.2))
 
-    fig = topic_model.visualize_topics()
+    fig = topic_model.visualize_topics(height=590, width=580)
+    # fig = topic_model.visualize_topics()
     
     # fig.write_html("visualisation.html")
 
@@ -227,57 +231,61 @@ def top_entity_polarity(cursor):
     return top_org, top_people, top_GPE, top_NORP, top_product
 
 # Initialising the streamlit webpage
-st.set_page_config()
+# @st.cache_resource
+def streamlit_web_initialisation():
 
-st.header('Weekly News Summary | NewsBevy', divider="blue") 
-st.markdown('<link rel="stylesheet" href="custom.css">', unsafe_allow_html=True)
+    st.header('Weekly News Summary | NewsBevy', divider="blue") 
+    st.markdown('<link rel="stylesheet" href="custom.css">', unsafe_allow_html=True)
 
-with st.container(border=True): 
+    with st.container(border=True): 
 
-    st_pyplot = st.empty()
+        st_pyplot = st.empty()
 
-with st.container(border=True): 
-    col1, col2 = st.columns([3, 2], gap="small")   
-    
-    with col1: 
-        st.markdown('<link rel="stylesheet" href="custom.css">', unsafe_allow_html=True)
+    with st.container(border=True): 
+        col1, col2 = st.columns([3, 2], gap="small")   
         
-        topics_headline = st.empty()
-        topics1 = st.empty() 
-        topics2 = st.empty()
-        topics3 = st.empty() 
-        topics4 = st.empty()
-        topics5 = st.empty()
+        with col1: 
+            st.markdown('<link rel="stylesheet" href="custom.css">', unsafe_allow_html=True)
+            
+            topics_headline = st.empty()
+            topics1 = st.empty() 
+            topics2 = st.empty()
+            topics3 = st.empty() 
+            topics4 = st.empty()
+            topics5 = st.empty()
 
-        topics6 = st.empty()
-        topics7 = st.empty()
-        topics8 = st.empty()
-        topics9 = st.empty()
-        topics10 = st.empty()
-        topics11 = st.empty()
-        topics12 = st.empty()
-    with col2: 
-        with st.container(border=True): 
-            st.write(f'**Top Mentioned Organisation**', unsafe_allow_html=True) 
-            top_mentioned_orgs1 = st.empty()
-        with st.container(border=True): 
-            st.write(f'**Top Mentioned Person**', unsafe_allow_html=True) 
-            top_mentioned_people1 = st.empty() 
-        with st.container(border=True):
-            st.write(f'**Top Mentioned GPE**', unsafe_allow_html=True)                
-            top_mentioned_GPEs1 = st.empty()
-        with st.container(border=True):
-            st.write(f'**Top Mentioned NORP**', unsafe_allow_html=True)                
-            top_mentioned_NORPS1 = st.empty()
-        with st.container(border=True):
-            st.write(f'**Top Mentioned Product**', unsafe_allow_html=True)                
-            top_mentioned_products1 = st.empty()
-with st.container(): 
-    # itopic_col1, itopic_col2, itopic_col3 = st.columns([0.28, 3.8, 0.28], gap="small")   
-    # with itopic_col2:
-    intertopic_chart = st.empty()
-    
-def my_task(connection, cursor):
+            topics6 = st.empty()
+            topics7 = st.empty()
+            topics8 = st.empty()
+            topics9 = st.empty()
+            topics10 = st.empty()
+            topics11 = st.empty()
+            topics12 = st.empty()
+        with col2: 
+            with st.container(border=True): 
+                st.write(f'**Top Mentioned Organisation**', unsafe_allow_html=True) 
+                top_mentioned_orgs1 = st.empty()
+            with st.container(border=True): 
+                st.write(f'**Top Mentioned Person**', unsafe_allow_html=True) 
+                top_mentioned_people1 = st.empty() 
+            with st.container(border=True):
+                st.write(f'**Top Mentioned GPE**', unsafe_allow_html=True)                
+                top_mentioned_GPEs1 = st.empty()
+            with st.container(border=True):
+                st.write(f'**Top Mentioned NORP**', unsafe_allow_html=True)                
+                top_mentioned_NORPS1 = st.empty()
+            with st.container(border=True):
+                st.write(f'**Top Mentioned Product**', unsafe_allow_html=True)                
+                top_mentioned_products1 = st.empty()
+    with st.container(): 
+        # itopic_col1, itopic_col2, itopic_col3 = st.columns([0.5, 3.8, 0.5], gap="small")   
+        # with itopic_col2:
+        intertopic_chart = st.empty()
+
+    return st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6, topics7, topics8, topics9, topics10, topics11, topics12, top_mentioned_orgs1, top_mentioned_people1, top_mentioned_GPEs1, top_mentioned_NORPS1, top_mentioned_products1, intertopic_chart
+
+
+def main_data(connection, cursor):
     
     sql1, sql2, sql3 = main_sql_insert_and_check()
     spacey_load(sql1, sql2, sql3)
@@ -292,7 +300,12 @@ def my_task(connection, cursor):
 
 
 # def frontpage_update(plt, representative_topics):
-def frontpage_update():
+def frontpage_update(conn, cursor):
+    
+    with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
+        fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  main_data(conn, cursor)
+    st.success('Done!')
+
     st_pyplot.pyplot(plt)
     topics_headline.write(f'**Top Intertopic Indicative Links**', unsafe_allow_html=True)
     topics1.write(f'<span class="custom-line">1. [{representative_topics[1][0]}]({representative_topics[1][1]})', unsafe_allow_html=True)
@@ -314,27 +327,27 @@ def frontpage_update():
     top_mentioned_products1.write(f'{products[0][0]} | Polarity {round(products[0][1],3)}')
     intertopic_chart.plotly_chart(fig, use_container_width=False)
 
-
-date = datetime.now().strftime('%Y-%m-%d')
+# date = datetime.now().strftime('%Y-%m-%d')
 conn = database_connection()    
 cursor = conn.cursor()
 # gnf = GoogleNewsFeed(language='en',country='UK')
-
 pio.templates.default = 'plotly'
 
-with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
-    fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
-    time.sleep(5)
-st.success('Done!')
+st.set_page_config()
+st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6, topics7, topics8, topics9, topics10, topics11, topics12, top_mentioned_orgs1, top_mentioned_people1, top_mentioned_GPEs1, top_mentioned_NORPS1, top_mentioned_products1, intertopic_chart = streamlit_web_initialisation()
+# with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
+#     fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  main_data(connection=conn, cursor=cursor)
+#     time.sleep(5)
+#     frontpage_update()
+# st.success('Done!')
 
 # fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
 
-schedule.every(15).minutes.do(my_task, connection=conn, cursor=cursor)
+schedule.every(4).minutes.do(frontpage_update, conn=conn, cursor=cursor)
 
-while True: 
+while streamlit_web_initialisation: 
     schedule.run_pending()
-    # frontpage_update(plt=plt, representative_topics=representative_topics)
-    frontpage_update()
+    # frontpage_update(plt=plt, representative_topics=representative_topics
     time.sleep(1)
 
 
