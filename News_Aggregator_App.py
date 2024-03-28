@@ -33,8 +33,8 @@ def database_connection():
             dbname="pagila",
             # user="de_raka",
             # password="vacso",
-            user = db_username
-            password = db_password
+            user = db_username,
+            password = db_password,
             # user = st.secrets["db_username"],
             # password = st.secrets["db_password"],
             port="5432"    
