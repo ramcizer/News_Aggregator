@@ -225,7 +225,7 @@ def top_entity_polarity(cursor):
 # Initialising the streamlit webpage
 st.set_page_config()
 
-st.header('Weekly News Aggregated Summary | NewsBevy', divider="blue") 
+st.header('Weekly News Summary | NewsBevy', divider="blue") 
 st.markdown('<link rel="stylesheet" href="custom.css">', unsafe_allow_html=True)
 
 with st.container(border=True): 
