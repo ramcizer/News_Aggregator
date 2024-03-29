@@ -348,6 +348,6 @@ schedule.every(15).minutes.do(frontpage_update, conn=conn, cursor=cursor)
 while streamlit_web_initialisation: 
     schedule.run_pending()
     # frontpage_update(plt=plt, representative_topics=representative_topics
-    time.sleep(1)
+    # time.sleep(1)
 
 
