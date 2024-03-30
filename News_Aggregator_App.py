@@ -23,16 +23,17 @@ import requests
 from xml.etree import ElementTree
 # import os
 
+# st.cache_resource
 def database_connection(): 
 # The connection to the PostGre database
-    db_username = st.secrets["db_username"]
-    db_password = st.secrets["db_password"]
     try: 
         conn = psycopg2.connect(
             host="data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com",
             dbname="pagila",
-            user = db_username,
-            password = db_password,
+            user="de_raka",
+            password="vacso",
+            # user = st.secrets["db_username"],
+            # password = st.secrets["db_password"],
             port="5432"    
         )
     except (Exception, psycopg2.DatabaseError) as error:
@@ -284,27 +285,39 @@ def streamlit_web_initialisation():
 
     return st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6, topics7, topics8, topics9, topics10, topics11, topics12, top_mentioned_orgs1, top_mentioned_people1, top_mentioned_GPEs1, top_mentioned_NORPS1, top_mentioned_products1, intertopic_chart
 
-
-def main_data(connection, cursor):
+# @st.cache(show_spinner="Fetching data from API...")
+def main_data():
     
     sql1, sql2, sql3 = main_sql_insert_and_check()
     spacey_load(sql1, sql2, sql3)
     fig, titles, representative_topics = bertopic_load_query_output(cursor=cursor)
     original_figure_data = fig['data']
     original_figure_layout = fig['layout']
-    # # Creating a new figure using plotly.graph_objs.Figure constructor
+    # Creating a new figure using plotly.graph_objs.Figure constructor
     fig = Figure(data=original_figure_data, layout=original_figure_layout)
     plt = wordcloud_load_and_output(titles)
-    orgs, people, GPEs, NORPs, products = top_entity_polarity(cursor=cursor)
-    return fig, plt, representative_topics, orgs, people, GPEs, NORPs, products
+    orgs, people, GPEs, NORPs, products = top_entity_polarity(cursor=cursor) 
+
+    main_data_to_load = (fig, plt, representative_topics, orgs, people, GPEs, NORPs, products)   
+
+
+    return main_data_to_load
 
 
 # def frontpage_update(plt, representative_topics):
 def frontpage_update(conn, cursor):
     
     # with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
-    fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  main_data(conn, cursor)
+    main_data_to_load  =  main_data()
     # st.success('Done!')
+    fig = main_data_to_load[0]
+    plt = main_data_to_load[1]
+    representative_topics = main_data_to_load[2]
+    orgs = main_data_to_load[3]
+    people = main_data_to_load[4]
+    GPEs = main_data_to_load[5]
+    NORPs = main_data_to_load[6]
+    products = main_data_to_load[7]
 
     st_pyplot.pyplot(plt)
     topics_headline.write(f'**Top Intertopic Indicative Links**', unsafe_allow_html=True)
@@ -328,13 +341,15 @@ def frontpage_update(conn, cursor):
     intertopic_chart.plotly_chart(fig, use_container_width=False)
 
 # date = datetime.now().strftime('%Y-%m-%d')
-conn = database_connection()    
-cursor = conn.cursor()
+
 # gnf = GoogleNewsFeed(language='en',country='UK')
 pio.templates.default = 'plotly'
 
 st.set_page_config()
-st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6, topics7, topics8, topics9, topics10, topics11, topics12, top_mentioned_orgs1, top_mentioned_people1, top_mentioned_GPEs1, top_mentioned_NORPS1, top_mentioned_products1, intertopic_chart = streamlit_web_initialisation()
+conn = database_connection()    
+cursor = conn.cursor()
+st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6, topics7, topics8, topics9, topics10, topics11, topics12, top_mentioned_orgs1, top_mentioned_people1, top_mentioned_GPEs1, top_mentioned_NORPS1, top_mentioned_products1, intertopic_chart= streamlit_web_initialisation()
+# st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6, topics7, topics8, topics9, topics10, topics11, topics12, top_mentioned_orgs1, top_mentioned_people1, top_mentioned_GPEs1, top_mentioned_NORPS1, top_mentioned_products1, intertopic_chart = streamlit_web_initialisation()
 # with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
 #     fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  main_data(connection=conn, cursor=cursor)
 #     time.sleep(5)
@@ -348,6 +363,6 @@ schedule.every(15).minutes.do(frontpage_update, conn=conn, cursor=cursor)
 while streamlit_web_initialisation: 
     schedule.run_pending()
     # frontpage_update(plt=plt, representative_topics=representative_topics
-    # time.sleep(1)
+    # time.sleep(1)   
 
 
