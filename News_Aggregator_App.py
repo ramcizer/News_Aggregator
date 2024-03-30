@@ -302,9 +302,9 @@ def main_data(connection, cursor):
 # def frontpage_update(plt, representative_topics):
 def frontpage_update(conn, cursor):
     
-    with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
-        fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  main_data(conn, cursor)
-    st.success('Done!')
+    # with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
+    fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  main_data(conn, cursor)
+    # st.success('Done!')
 
     st_pyplot.pyplot(plt)
     topics_headline.write(f'**Top Intertopic Indicative Links**', unsafe_allow_html=True)
