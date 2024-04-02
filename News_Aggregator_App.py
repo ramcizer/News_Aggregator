@@ -213,7 +213,7 @@ def wordcloud_load_and_output(title_list):
 
 def top_entity_polarity(cursor):
 
-    top_org_sql, top_people_sql, top_GPE_sql, NORP_sql, poduct_sql = sql_for_top_entity_polarity()
+    top_org_sql, top_people_sql, top_GPE_sql, top_NORP_sql, top_poduct_sql = sql_for_top_entity_polarity()
     cursor.execute(top_org_sql)
     top_org = cursor.fetchall()
 
@@ -223,10 +223,10 @@ def top_entity_polarity(cursor):
     cursor.execute(top_GPE_sql)
     top_GPE = cursor.fetchall()
 
-    cursor.execute(NORP_sql)
+    cursor.execute(top_NORP_sql)
     top_NORP = cursor.fetchall()
 
-    cursor.execute(poduct_sql)
+    cursor.execute(top_poduct_sql)
     top_product = cursor.fetchall()
 
     return top_org, top_people, top_GPE, top_NORP, top_product
