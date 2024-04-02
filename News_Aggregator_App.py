@@ -26,14 +26,14 @@ from xml.etree import ElementTree
 # st.cache_resource
 def database_connection(): 
 # The connection to the PostGre database
+    db_username = st.secrets["db_username"]
+    db_password = st.secrets["db_password"]
     try: 
         conn = psycopg2.connect(
             host="data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com",
             dbname="pagila",
-            user="de_raka",
-            password="vacso",
-            # user = st.secrets["db_username"],
-            # password = st.secrets["db_password"],
+            user = db_username,
+            password = db_password,
             port="5432"    
         )
     except (Exception, psycopg2.DatabaseError) as error:
