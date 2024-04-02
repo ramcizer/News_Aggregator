@@ -193,7 +193,7 @@ def wordcloud_load_and_output(title_list):
     nltk.download('stopwords')
     stop_words = set(stopwords.words('english'))
 
-    stop_words.update(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'])
+    stop_words.update(['say', 'says', 'new', 'day', 'man', 'woman', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'could', 'see'])
     stop_words = list(stop_words)
 
     # stopwords = nltk.corpus.stopwords.words('english')
