@@ -61,7 +61,7 @@ def database_table_creation(connection, cursor):
             polarity float
         )
     """
-    cursor = connection.cursor()
+    # cursor = connection.cursor()
     cursor.execute(sql_create_table)
     conn.commit()
 
@@ -139,19 +139,20 @@ def spacey_load(query1, query2, query3):
                 entity_data = (pub_date, ent.text, ent.label_, polarity)
                 cursor.execute(query2, entity_data)        
                 conn.commit()
-    
 
-def bertopic_load_query_output(cursor):
-
-    ### Section for BERTopic 
+def all_titles_fetch(cursor):
 
     sql_query_for_titles, top_representative_sql = sql_queries_for_BERTopic()   
 
     # Need to include defensive to forward the cached version of the fig after this
     cursor.execute(sql_query_for_titles)
     titles = [title[0] for title in cursor.fetchall()]
-    # except Exception: 
-    #     titles = []
+    return titles, top_representative_sql
+
+def bertopic_load_query_output(cursor, titles, top_rep_SQL):
+
+    ### Section for BERTopic 
+    # titles  = all_titles_fetch(cursor=cursor)
 
     vectorizer_model = CountVectorizer(stop_words="english")
 
@@ -165,7 +166,7 @@ def bertopic_load_query_output(cursor):
     # The links to the right of intertopic
     representative_topics_dict = {}
     for i in range(len(topic_df)): 
-        cursor.execute(top_representative_sql, (topic_df.Representative_Docs[i][0],))
+        cursor.execute(top_rep_SQL, (topic_df.Representative_Docs[i][0],))
         top_representative = cursor.fetchall()
         # try: 
         #     top_representative = cursor.fetchall()
@@ -184,8 +185,9 @@ def bertopic_load_query_output(cursor):
     
     # fig.write_html("visualisation.html")
 
-    return fig, titles, representative_topics_dict
+    return fig, representative_topics_dict
 
+@st.cache_resource
 def wordcloud_load_and_output(title_list): 
 
     title_text = ' '.join(title_list)
@@ -286,29 +288,29 @@ def streamlit_web_initialisation():
     return st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6, topics7, topics8, topics9, topics10, topics11, topics12, top_mentioned_orgs1, top_mentioned_people1, top_mentioned_GPEs1, top_mentioned_NORPS1, top_mentioned_products1, intertopic_chart
 
 # @st.cache(show_spinner="Fetching data from API...")
-def main_data():
+def main_data(cursor):
     
     sql1, sql2, sql3 = main_sql_insert_and_check()
     spacey_load(sql1, sql2, sql3)
-    fig, titles, representative_topics = bertopic_load_query_output(cursor=cursor)
+    titles, top_rep_SQL = all_titles_fetch(cursor=cursor)
+    plt = wordcloud_load_and_output(titles)
+    fig, representative_topics = bertopic_load_query_output(cursor=cursor, titles=titles, top_rep_SQL=top_rep_SQL)
     original_figure_data = fig['data']
     original_figure_layout = fig['layout']
     # Creating a new figure using plotly.graph_objs.Figure constructor
     fig = Figure(data=original_figure_data, layout=original_figure_layout)
-    plt = wordcloud_load_and_output(titles)
     orgs, people, GPEs, NORPs, products = top_entity_polarity(cursor=cursor) 
-
     main_data_to_load = (fig, plt, representative_topics, orgs, people, GPEs, NORPs, products)   
 
 
     return main_data_to_load
 
 
-# def frontpage_update(plt, representative_topics):
+# def frontpage_update(connection, representative_topics):
 def frontpage_update(conn, cursor):
     
     # with st.spinner('Wait for it...Just getting together the most up-to-date WordCloud'):
-    main_data_to_load  =  main_data()
+    main_data_to_load  =  main_data(cursor=cursor)
     # st.success('Done!')
     fig = main_data_to_load[0]
     plt = main_data_to_load[1]
@@ -358,7 +360,7 @@ st_pyplot, topics_headline, topics1, topics2, topics3, topics4, topics5, topics6
 
 # fig, plt, representative_topics, orgs, people, GPEs, NORPs, products =  my_task(connection=conn, cursor=cursor)
 
-schedule.every(15).minutes.do(frontpage_update, conn=conn, cursor=cursor)
+schedule.every(4).minutes.do(frontpage_update, conn=conn, cursor=cursor)
 
 while streamlit_web_initialisation: 
     schedule.run_pending()
