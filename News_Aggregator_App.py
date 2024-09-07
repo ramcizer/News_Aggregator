@@ -2,8 +2,8 @@ import psycopg2
 import re 
 import pandas as pd
 from datetime import datetime
-#import spacy
-import spacy_streamlit
+import spacy
+# import spacy_streamlit
 from spacytextblob.spacytextblob import SpacyTextBlob
 from bertopic import BERTopic
 import plotly.graph_objs as go
