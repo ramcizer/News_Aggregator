@@ -187,7 +187,7 @@ def bertopic_load_query_output(cursor, titles, top_rep_SQL):
 
     return fig, representative_topics_dict
 
-@st.cache_resource
+#@st.cache_resource
 def wordcloud_load_and_output(title_list): 
 
     title_text = ' '.join(title_list)
